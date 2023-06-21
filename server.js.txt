@@ -1,0 +1,39 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const MongoClient = require('mongodb').MongoClient;
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+// Middleware
+app.use(bodyParser.json());
+
+// MongoDB configuration
+const uri = 'mongodb://localhost:27017';
+const dbName = 'passwords';
+
+// Routes
+app.post('/api/password', async (req, res) => {
+  const { password } = req.body;
+
+  try {
+    const client = await MongoClient.connect(uri);
+    const db = client.db(dbName);
+    const collection = db.collection('passwords');
+    await collection.insertOne({ password });
+    client.close();
+
+    // Perform password strength checking and return the result
+    // Modify this logic according to your implementation
+    const result = password.length >= 6 && password.length <= 20 ? 'Strong' : 'Weak';
+
+    res.json({ result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

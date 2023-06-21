@@ -1,0 +1,42 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+
+function App() {
+  const [password, setPassword] = useState('');
+  const [result, setResult] = useState('');
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('/api/password', { password });
+      setResult(response.data.result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1>Password Strength Checker</h1>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="password">Enter a password:</label>
+        <input
+          type="password"
+          id="password"
+          value={password}
+          onChange={handlePasswordChange}
+          required
+        />
+        <button type="submit">Check</button>
+      </form>
+      {result && <p>Result: {result}</p>}
+    </div>
+  );
+}
+
+export default App;
